@@ -7,18 +7,28 @@ import { eq, and, gte, count, avg, sql } from "drizzle-orm";
 import { getStartOfWeek, getStartOfMonth } from "@/lib/utils";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import CopyLinkButton from "@/components/CopyLinkButton";
+import BusinessSwitcher from "@/components/BusinessSwitcher";
 import { SignOutButton } from "@clerk/nextjs";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ business?: string }>;
+}) {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
+
+  const { business: businessParam } = await searchParams;
 
   const userBusinesses = await db
     .select()
     .from(businesses)
     .where(eq(businesses.ownerId, userId));
 
-  const business = userBusinesses[0] ?? null;
+  const business =
+    (businessParam ? userBusinesses.find((b) => b.id === businessParam) : null) ??
+    userBusinesses[0] ??
+    null;
 
   let stats = null;
   let privateFeedback: typeof reviews.$inferSelect[] = [];
@@ -98,12 +108,21 @@ export default async function DashboardPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        {/* Welcome */}
-        <div className="animate-fade-in">
-          <h1 className="text-2xl font-bold mb-1">Dashboard</h1>
-          <p className="text-white/40 text-sm">
-            {business ? `Managing ${business.name}` : "Get started by adding your business"}
-          </p>
+        {/* Welcome + Business Switcher */}
+        <div className="animate-fade-in space-y-4">
+          <div>
+            <h1 className="text-2xl font-bold mb-1">Dashboard</h1>
+            <p className="text-white/40 text-sm">
+              {business ? `Showing stats for ${business.name}` : "Get started by adding your business"}
+            </p>
+          </div>
+
+          {userBusinesses.length > 0 && (
+            <BusinessSwitcher
+              businesses={userBusinesses.map((b) => ({ id: b.id, name: b.name, type: b.type }))}
+              selectedId={business?.id ?? ""}
+            />
+          )}
         </div>
 
         {!business ? (
@@ -238,18 +257,6 @@ export default async function DashboardPage() {
               </div>
             )}
           </>
-        )}
-
-        {/* Add/Manage business CTA */}
-        {business && (
-          <div className="flex gap-3 pb-8 animate-fade-in">
-            <Link
-              href="/dashboard/add-business"
-              className="text-sm text-white/50 hover:text-white border border-white/10 hover:border-white/20 px-4 py-2 rounded-xl transition-colors"
-            >
-              + Add Another Business
-            </Link>
-          </div>
         )}
       </main>
     </div>
