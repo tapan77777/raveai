@@ -8,7 +8,9 @@ import { getStartOfWeek, getStartOfMonth } from "@/lib/utils";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import CopyLinkButton from "@/components/CopyLinkButton";
 import BusinessSwitcher from "@/components/BusinessSwitcher";
-import TentCardGenerator from "@/components/TentCardGenerator";
+import SinglePageTentCard from "@/components/SinglePageTentCard";
+import ReportGenerator from "@/components/ReportGenerator";
+import DeleteBusinessButton from "@/components/DeleteBusinessButton";
 import { SignOutButton } from "@clerk/nextjs";
 
 export default async function DashboardPage({
@@ -162,7 +164,7 @@ export default async function DashboardPage({
               ))}
             </div>
 
-            {/* Business info + QR + Link */}
+            {/* Business info + QR */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
               {/* Business Details */}
               <div className="glass-card rounded-2xl p-6">
@@ -186,13 +188,15 @@ export default async function DashboardPage({
                     <div className="flex justify-between">
                       <dt className="text-white/40">Google Maps</dt>
                       <dd>
-                        <a href={business.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 text-xs underline">
+                        <a href={business.googleMapsUrl} target="_blank" rel="noopener noreferrer"
+                          className="text-violet-400 hover:text-violet-300 text-xs underline">
                           View
                         </a>
                       </dd>
                     </div>
                   )}
                 </dl>
+                <DeleteBusinessButton businessId={business.id} businessName={business.name} />
               </div>
 
               {/* QR Code */}
@@ -220,14 +224,14 @@ export default async function DashboardPage({
               </div>
             )}
 
-            {/* Tent Card Generator */}
+            {/* Tent Card (single page) */}
             {reviewUrl && (
               <div className="glass-card rounded-2xl p-6 animate-fade-in">
                 <h2 className="font-semibold text-lg mb-1">🪧 Tent Card</h2>
                 <p className="text-white/40 text-xs mb-5">
-                  Print &amp; fold — place on tables or counters to collect reviews.
+                  Premium single-page card — print on 4×6 and place on tables or counters.
                 </p>
-                <TentCardGenerator
+                <SinglePageTentCard
                   businessName={business.name}
                   businessId={business.id}
                   logoUrl={business.logoUrl}
@@ -235,6 +239,15 @@ export default async function DashboardPage({
                 />
               </div>
             )}
+
+            {/* Reports */}
+            <div className="glass-card rounded-2xl p-6 animate-fade-in">
+              <h2 className="font-semibold text-lg mb-1">📊 Performance Reports</h2>
+              <p className="text-white/40 text-xs mb-5">
+                Download a shareable PNG report — weekly or monthly — to track and share your growth.
+              </p>
+              <ReportGenerator businessId={business.id} />
+            </div>
 
             {/* Platform Stats */}
             {stats && stats.platformStats.length > 0 && (
@@ -265,12 +278,8 @@ export default async function DashboardPage({
                   {privateFeedback.map((fb) => (
                     <div key={fb.id} className="bg-red-500/5 border border-red-500/10 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium">
-                          {"⭐".repeat(fb.rating)}
-                        </span>
-                        <span className="text-white/30 text-xs">
-                          {new Date(fb.createdAt).toLocaleDateString()}
-                        </span>
+                        <span className="text-sm font-medium">{"⭐".repeat(fb.rating)}</span>
+                        <span className="text-white/30 text-xs">{new Date(fb.createdAt).toLocaleDateString()}</span>
                       </div>
                       <p className="text-white/70 text-sm">{fb.privateFeedback || "No feedback provided"}</p>
                     </div>
