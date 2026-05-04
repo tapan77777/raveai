@@ -8,6 +8,7 @@ import { getStartOfWeek, getStartOfMonth } from "@/lib/utils";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import CopyLinkButton from "@/components/CopyLinkButton";
 import BusinessSwitcher from "@/components/BusinessSwitcher";
+import TentCardGenerator from "@/components/TentCardGenerator";
 import { SignOutButton } from "@clerk/nextjs";
 
 export default async function DashboardPage({
@@ -198,7 +199,12 @@ export default async function DashboardPage({
               <div className="glass-card rounded-2xl p-6 flex flex-col items-center">
                 <h2 className="font-semibold text-lg mb-4 self-start">📱 Your QR Code</h2>
                 {reviewUrl && (
-                  <QRCodeDisplay url={reviewUrl} businessName={business.name} />
+                  <QRCodeDisplay
+                    url={reviewUrl}
+                    businessName={business.name}
+                    businessId={business.id}
+                    initialLogoUrl={business.logoUrl}
+                  />
                 )}
               </div>
             </div>
@@ -211,6 +217,22 @@ export default async function DashboardPage({
                 <p className="text-white/30 text-xs mt-3">
                   Share this link or QR code with customers — on receipts, table cards, or social media.
                 </p>
+              </div>
+            )}
+
+            {/* Tent Card Generator */}
+            {reviewUrl && (
+              <div className="glass-card rounded-2xl p-6 animate-fade-in">
+                <h2 className="font-semibold text-lg mb-1">🪧 Tent Card</h2>
+                <p className="text-white/40 text-xs mb-5">
+                  Print &amp; fold — place on tables or counters to collect reviews.
+                </p>
+                <TentCardGenerator
+                  businessName={business.name}
+                  businessId={business.id}
+                  logoUrl={business.logoUrl}
+                  reviewUrl={reviewUrl}
+                />
               </div>
             )}
 

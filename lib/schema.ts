@@ -32,6 +32,7 @@ export const businesses = pgTable("businesses", {
   googleMapsUrl: text("google_maps_url"),
   makemytripUrl: text("makemytrip_url"),
   tripadvisorUrl: text("tripadvisor_url"),
+  logoUrl: text("logo_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
