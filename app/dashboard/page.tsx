@@ -76,7 +76,7 @@ export default async function DashboardPage({
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://raveai.app";
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://raveai.app").trim();
   const reviewUrl = business ? `${baseUrl}/r/${business.slug}` : null;
 
   const platformIcons: Record<string, string> = {
