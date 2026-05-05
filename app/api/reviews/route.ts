@@ -12,11 +12,12 @@ export async function POST(request: NextRequest) {
     platformClicked,
     isPrivate,
     privateFeedback,
+    reviewPath,
   } = body;
 
-  if (!businessId || !rating) {
+  if (!businessId) {
     return Response.json(
-      { error: "businessId and rating are required" },
+      { error: "businessId is required" },
       { status: 400 }
     );
   }
@@ -25,12 +26,13 @@ export async function POST(request: NextRequest) {
     .insert(reviews)
     .values({
       businessId,
-      rating,
+      rating: rating ?? null,
       tags: tags || [],
       generatedReview: generatedReview || null,
       platformClicked: platformClicked || null,
       isPrivate: isPrivate || false,
       privateFeedback: privateFeedback || null,
+      reviewPath: reviewPath || null,
     })
     .returning();
 

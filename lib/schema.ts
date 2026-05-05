@@ -41,12 +41,13 @@ export const reviews = pgTable("reviews", {
   businessId: uuid("business_id")
     .notNull()
     .references(() => businesses.id, { onDelete: "cascade" }),
-  rating: integer("rating").notNull(),
+  rating: integer("rating"),
   tags: text("tags").array(),
   generatedReview: text("generated_review"),
   platformClicked: platformEnum("platform_clicked"),
   isPrivate: boolean("is_private").default(false).notNull(),
   privateFeedback: text("private_feedback"),
+  reviewPath: text("review_path"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

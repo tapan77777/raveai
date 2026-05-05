@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
   const pub = current.filter((r) => !r.isPrivate);
   const total = pub.length;
-  const avgRating = total > 0 ? pub.reduce((s, r) => s + r.rating, 0) / total : null;
+  const avgRating = total > 0 ? pub.reduce((s, r) => s + (r.rating ?? 0), 0) / total : null;
 
   const ratingBreakdown = [5, 4, 3, 2, 1].map((rating) => ({
     rating,

@@ -278,7 +278,7 @@ export default async function DashboardPage({
                   {privateFeedback.map((fb) => (
                     <div key={fb.id} className="bg-red-500/5 border border-red-500/10 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium">{"⭐".repeat(fb.rating)}</span>
+                        <span className="text-sm font-medium">{"⭐".repeat(fb.rating ?? 0)}</span>
                         <span className="text-white/30 text-xs">{new Date(fb.createdAt).toLocaleDateString()}</span>
                       </div>
                       <p className="text-white/70 text-sm">{fb.privateFeedback || "No feedback provided"}</p>
