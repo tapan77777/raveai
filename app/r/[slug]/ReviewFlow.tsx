@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Business } from "@/lib/schema";
+import GoogleGuideModal from "@/components/GoogleGuideModal";
 
 const RATING_EMOJIS = [
   { rating: 5, emoji: "😍", label: "Amazing" },
@@ -57,6 +58,7 @@ export default function ReviewFlow({ business }: ReviewFlowProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [clickedPlatform, setClickedPlatform] = useState<string | null>(null);
+  const [showGoogleGuide, setShowGoogleGuide] = useState(false);
 
   const handleRating = async (r: number) => {
     setRating(r);
@@ -126,6 +128,20 @@ export default function ReviewFlow({ business }: ReviewFlowProps) {
       setError(err instanceof Error ? err.message : "Failed to generate review");
       setScreen("tags");
     }
+  };
+
+  const handleGoogleClick = async () => {
+    setClickedPlatform("google");
+    await navigator.clipboard.writeText(generatedReview).catch(() => {});
+    setCopied(true);
+    if (reviewId) {
+      fetch(`/api/reviews/${reviewId}/platform`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ platformClicked: "google" }),
+      }).catch(() => {});
+    }
+    setShowGoogleGuide(true);
   };
 
   const handlePlatformClick = async (platform: string, url: string) => {
@@ -329,7 +345,7 @@ export default function ReviewFlow({ business }: ReviewFlowProps) {
             <div className="space-y-3 mb-4">
               {business.googleMapsUrl && (
                 <button
-                  onClick={() => handlePlatformClick("google", business.googleMapsUrl!)}
+                  onClick={handleGoogleClick}
                   className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-semibold text-base transition-all duration-200 active:scale-95 min-h-[60px] ${
                     clickedPlatform === "google"
                       ? "bg-blue-500/30 border border-blue-400/60 text-blue-300"
@@ -433,6 +449,14 @@ export default function ReviewFlow({ business }: ReviewFlowProps) {
           </div>
         )}
       </div>
+
+      {/* Google guide modal */}
+      {showGoogleGuide && business.googleMapsUrl && (
+        <GoogleGuideModal
+          googleMapsUrl={business.googleMapsUrl}
+          onClose={() => setShowGoogleGuide(false)}
+        />
+      )}
     </div>
   );
 }
